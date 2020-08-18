@@ -1,0 +1,1 @@
+@H:\Documents\Scripts\CP\cp.py %*
