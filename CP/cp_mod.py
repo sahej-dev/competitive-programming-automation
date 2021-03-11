@@ -1,10 +1,19 @@
 """
-NOTE: replace all 'H:\\Documents\\Scripts\\CP\\data\\cp.dat' to 'H:\\Documents\\Scripts\\CP\\data\\cp.dat'
+NOTE: replace all DAT_FILE to DAT_FILE
       before using final build.
 """
 
 import os
 import dload
+
+sep = ''
+if 'nt' in os.name:
+    sep = '\\'
+else:
+    sep = '/'
+
+TEMPLATE = f'.{sep}data{sep}template.cpp'
+DAT_FILE = f'.{sep}data{sep}cp.dat'
 
 def parse_num(num):
     """
@@ -44,11 +53,11 @@ def get_data(arg, problem_num = "", problem_name = "", path_arg = ""):
     path = str()
     
     if problem_num != "" and problem_name != "" and path_arg != "":
-        path = path_arg + '\\'
+        path = path_arg + ''+sep+''
         problem_num = parse_num(problem_num)
         problem_name = parse_name(arg, problem_name)
 
-        data_file = open('H:\\Documents\\Scripts\\CP\\data\\cp.dat', 'w')
+        data_file = open(DAT_FILE, 'w')
 
         # Writing path
         data_file.write(path + '\n')
@@ -64,13 +73,13 @@ def get_data(arg, problem_num = "", problem_name = "", path_arg = ""):
         return (path, problem_num, problem_name)
 
     elif problem_num != "" and problem_name != "" and path_arg == "":
-        data = open('H:\\Documents\\Scripts\\CP\\data\\cp.dat', 'r').readlines()
+        data = open(DAT_FILE, 'r').readlines()
         path = data[0].rstrip('\n')
         problem_num = parse_num(problem_num)
         problem_name = parse_name(arg, problem_name)
 
         
-        data_file = open('H:\\Documents\\Scripts\\CP\\data\\cp.dat', 'w')
+        data_file = open(DAT_FILE, 'w')
 
         # Writing path
         data_file.write(path + '\n')
@@ -86,7 +95,7 @@ def get_data(arg, problem_num = "", problem_name = "", path_arg = ""):
         return (path, problem_num, problem_name)
 
     else:
-        data = open('H:\\Documents\\Scripts\\CP\\data\\cp.dat', 'r').readlines()
+        data = open(DAT_FILE, 'r').readlines()
         data[0] = data[0].rstrip('\n')
         data[1] = data[1].rstrip('\n')
         data[2] = data[2].rstrip('\n')
@@ -106,16 +115,18 @@ def make_cpp_file(path, problem_num, flag = '-u'):
     cpp = open(path + problem_num + '.cpp', "w")
 
     if flag == '-u':
-        code = ('#include <bits/stdc++.h>\n\n'
-                'using namespace std;\n\n'
-                'int main()\n'
-                '{\n\n'
-                '    freopen("' + problem_num + '.in", "r", stdin);\n'
-                '    freopen("' + problem_num + '.out", "w", stdout);\n'
-                '\n\n\n'
-                '    return 0;\n'
-                '}')
+        # code = ('#include <bits/stdc++.h>\n\n'
+        #         'using namespace std;\n\n'
+        #         'int main()\n'
+        #         '{\n\n'
+        #         '    freopen("' + problem_num + '.in", "r", stdin);\n'
+        #         '    freopen("' + problem_num + '.out", "w", stdout);\n'
+        #         '\n\n\n'
+        #         '    return 0;\n'
+        #         '}')
+        code = open(TEMPLATE, 'r').read()
 
+        code = code.replace('problem_num', problem_num)
         cpp.write(code)
         cpp.close()
     elif flag == '-k':
@@ -159,7 +170,7 @@ def make_kattis_folder(path, problem_num):
         make_cpp_file(path, problem_num, '-k')
 
         # Creates test data folder
-        test_data = path + 'Test_Data\\'
+        test_data = path + 'Test_Data'+sep+''
         os.mkdir(test_data)
 
     except FileExistsError:
@@ -205,7 +216,7 @@ def compile_cpp(path, problem_num):
 def output(total_outputs, path, problem_num):
     compile_cpp(path, problem_num)
 
-    test_data_path = path + 'Test_Data\\'
+    test_data_path = path + 'Test_Data'+sep+''
     files = os.listdir(test_data_path)
     for file_name in files:
         if '.in' in file_name and (total_outputs > 0 or total_outputs == -1):
@@ -222,7 +233,7 @@ def output(total_outputs, path, problem_num):
 def output_termial(total_outputs, path, problem_num):
     compile_cpp(path, problem_num)
 
-    test_data_path = path + 'Test_Data\\'
+    test_data_path = path + 'Test_Data'+sep+''
     files = os.listdir(test_data_path)
 
     tc = 1
@@ -257,7 +268,7 @@ def debug_full(path, problem_num):
     
     # Comparing outputs
     tc = 1
-    test_data_path = path + 'Test_Data\\'
+    test_data_path = path + 'Test_Data'+sep+''
     files = os.listdir(test_data_path)
     for i in range(0, len(files), 3):
         ans = test_data_path + files[i]
